@@ -1,24 +1,23 @@
-// main.js
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PORT = process.env.PORT || 3000;
 
 // ✅ Cấu hình bảo mật & CORS
 app.use(helmet());
 app.use(cors({
-  origin: [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "http://localhost:5173",
-    "*" // 👈 Thêm dòng này để cho phép truy cập từ thiết bị khác (Android)
-  ],
+  origin: "*",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
@@ -26,8 +25,8 @@ app.use(cors({
 // ✅ Cho phép đọc JSON trong body
 app.use(express.json());
 
-// ✅ Cho phép truy cập file HTML/CSS/JS trong cùng thư mục
-app.use(express.static("."));
+// ✅ Phục vụ file tĩnh từ thư mục public/
+app.use(express.static(path.join(__dirname, "public")));
 
 // ✅ Giới hạn số lượng request (tránh spam)
 const limiter = rateLimit({
@@ -68,7 +67,12 @@ app.post("/analyze", async (req, res) => {
   }
 });
 
-// ✅ Khởi động server (cho phép truy cập từ Android qua Wi-Fi)
-app.listen(3000, "0.0.0.0", () => {
-  console.log("✅ Server đang chạy tại http://localhost:3000");
+// ✅ Trang mặc định khi truy cập "/"
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "web_split.html"));
+});
+
+// ✅ Khởi động server
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server đang chạy tại port ${PORT}`);
 });
