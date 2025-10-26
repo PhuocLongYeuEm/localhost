@@ -1,5 +1,5 @@
 // analyzer.js
-const API_URL = "http://localhost:3000/analyze";
+const API_URL = "https://lck-h7uu.onrender.com/analyze";
 
 // Đảm bảo code chỉ chạy sau khi toàn bộ HTML đã tải xong
 window.addEventListener("DOMContentLoaded", () => {
